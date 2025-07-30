@@ -97,6 +97,19 @@ The CI/CD pipeline ensures code quality and provides an always up-to-date deploy
 - `ci.yml`: Runs linting and tests
 - `deploy.yml`: Builds and deploys the application to GitHub Pages
 
+### Deployment Configuration
+
+The application is configured for deployment to GitHub Pages with the following settings:
+
+- **Homepage**: The `homepage` field in `packages/web/package.json` is set to `https://gygabyyyte.github.io/voice_memos/` to ensure correct asset path resolution.
+- **Build Output**: The build output from `packages/web/build` is deployed to GitHub Pages.
+
+#### Important Notes for Deployment
+
+- The `homepage` field in `package.json` is crucial for Create React App applications deployed to GitHub Pages. Without it, static assets (JS, CSS, images) will have incorrect paths and result in 404 errors.
+- If the repository name changes, the `homepage` field must be updated accordingly.
+- For local development, the `homepage` field doesn't affect the development server, which always serves from the root path.
+
 ## Browser Support
 
 This application is designed to work in Google Chrome on Windows and Mac.
