@@ -83,6 +83,20 @@ The application is designed with modularity and reusability in mind:
   - Pages: Application pages
   - Services: Concrete implementations of services defined in the common package
 
+## CI/CD
+
+This project uses GitHub Actions for continuous integration and deployment:
+
+- **Continuous Integration**: Automatically runs linting and tests on every push and pull request to the main branch.
+- **Continuous Deployment**: Automatically builds and deploys the application to GitHub Pages when changes are pushed to the main branch.
+
+The CI/CD pipeline ensures code quality and provides an always up-to-date deployed version of the application.
+
+### Workflows
+
+- `ci.yml`: Runs linting and tests
+- `deploy.yml`: Builds and deploys the application to GitHub Pages
+
 ## Browser Support
 
 This application is designed to work in Google Chrome on Windows and Mac.
