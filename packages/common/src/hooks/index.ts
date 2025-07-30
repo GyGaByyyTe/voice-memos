@@ -31,8 +31,7 @@ export class SpeechRecognitionManager {
   private initializeSpeechRecognition(): void {
     if (typeof window === 'undefined') return;
 
-    const SpeechRecognitionAPI = window.SpeechRecognition || 
-                               (window as any).webkitSpeechRecognition;
+    const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
 
     if (!SpeechRecognitionAPI) {
       this.error = 'Распознавание речи не поддерживается в этом браузере';
@@ -97,6 +96,7 @@ export class SpeechRecognitionManager {
         } catch (e) {
           this.isListening = false;
           this.notifyListeningChange();
+          return e;
         }
       } else {
         this.isListening = false;

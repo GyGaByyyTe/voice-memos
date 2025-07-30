@@ -9,13 +9,33 @@
     "start": "pnpm --filter @voice-memos/web start",
     "build": "pnpm --filter \"@voice-memos/*\" build",
     "test": "pnpm --filter \"@voice-memos/*\" test",
-    "lint": "pnpm --filter \"@voice-memos/*\" lint"
+    "lint": "pnpm --filter \"@voice-memos/*\" lint",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "prepare": "husky"
   },
   "devDependencies": {
-    "typescript": "^5.0.0"
+    "@typescript-eslint/eslint-plugin": "^8.38.0",
+    "@typescript-eslint/parser": "^8.38.0",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.3",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.2",
+    "prettier": "^3.6.2",
+    "typescript": "^5.0.0",
+    "typescript-eslint": "^8.38.0"
   },
   "engines": {
     "node": ">=16.0.0",
     "pnpm": ">=7.0.0"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{js,jsx,json,md}": [
+      "prettier --write"
+    ]
   }
 }
