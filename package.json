@@ -2,6 +2,7 @@
   "name": "voice-memos",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://gygabyyyte.github.io/",
   "workspaces": [
     "packages/*"
   ],
