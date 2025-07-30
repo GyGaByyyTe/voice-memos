@@ -1,0 +1,45 @@
+# Зависимости
+node_modules/
+.pnp
+.pnp.js
+
+# Файлы сборки
+/packages/*/dist
+/packages/*/build
+
+# Тестирование
+/packages/*/coverage
+
+# Переменные среды
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Логи
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Редакторы и IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Операционные системы
+.DS_Store
+Thumbs.db
+
+# Кэш
+.cache/
+.npm/
+
+# TypeScript
+tsconfig.tsbuildinfo
+
+# Файлы блокировки, кроме pnpm-lock.yaml
+package-lock.json
+yarn.lock

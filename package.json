@@ -1,0 +1,21 @@
+{
+  "name": "voice-memos",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "start": "pnpm --filter @voice-memos/web start",
+    "build": "pnpm --filter \"@voice-memos/*\" build",
+    "test": "pnpm --filter \"@voice-memos/*\" test",
+    "lint": "pnpm --filter \"@voice-memos/*\" lint"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "pnpm": ">=7.0.0"
+  }
+}
