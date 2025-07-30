@@ -68,6 +68,61 @@ To run tests for all packages:
 pnpm test
 ```
 
+#### Testing Setup
+
+The project uses Jest and React Testing Library for testing:
+
+- **Common Package**: Uses Jest with ts-jest for TypeScript support
+  - Tests are located in `src/__tests__` directory
+  - Tests utility functions and other non-React code
+
+- **Web Package**: Uses Create React App's built-in Jest configuration with React Testing Library
+  - Tests are co-located with components
+  - Uses a custom render function from `src/test-utils.tsx` that provides:
+    - Access to testing utilities
+    - Mock implementations for browser APIs like SpeechRecognition
+
+#### Writing Tests
+
+Example of testing a React component:
+
+```tsx
+import React from 'react';
+import { render, screen, fireEvent } from '../../test-utils';
+import Button from './Button';
+
+describe('Button Component', () => {
+  test('renders button with default props', () => {
+    render(<Button>Click me</Button>);
+
+    const button = screen.getByTestId('button');
+
+    // Check content
+    expect(button).toHaveTextContent('Click me');
+
+    // Check default classes
+    expect(button).toHaveClass('button-primary');
+
+    // Test interactions
+    fireEvent.click(button);
+  });
+});
+```
+
+Example of testing a utility function:
+
+```ts
+import { truncateText } from '../../utils';
+
+describe('truncateText', () => {
+  it('should return the original text if it is shorter than maxLength', () => {
+    const text = 'Hello, world!';
+    const maxLength = 20;
+    expect(truncateText(text, maxLength)).toBe(text);
+  });
+});
+```
+
 ## Project Design
 
 The application is designed with modularity and reusability in mind:
