@@ -1,5 +1,5 @@
-import React from 'react';
 import './App.css';
+import React from 'react';
 import { formatDate } from '@voice-memos/common';
 
 function App() {

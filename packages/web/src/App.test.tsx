@@ -1,10 +1,10 @@
 import React from 'react';
-import { render, screen, fireEvent } from './test-utils';
 import App from './App';
+import { render, screen, fireEvent } from './test-utils';
 
 describe('App Component', () => {
-  test('renders learn react link', () => {
-    render(<App />);
+  test('renders learn react link', async () => {
+    await render(<App />, { withMemoProvider: false });
 
     // Check that the link is in the document
     const linkElement = screen.getByText(/learn react/i);

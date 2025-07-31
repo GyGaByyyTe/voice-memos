@@ -3,8 +3,8 @@ import { render, screen, fireEvent } from '../../test-utils';
 import Button from './Button';
 
 describe('Button Component', () => {
-  test('renders button with default props', () => {
-    render(<Button>Click me</Button>);
+  test('renders button with default props', async () => {
+    await render(<Button>Click me</Button>, { withMemoProvider: false });
 
     const button = screen.getByTestId('button');
 
@@ -20,11 +20,12 @@ describe('Button Component', () => {
     expect(button).not.toBeDisabled();
   });
 
-  test('renders button with custom props', () => {
-    render(
+  test('renders button with custom props', async () => {
+    await render(
       <Button variant="secondary" size="large" disabled={true} className="custom-class">
         Submit
-      </Button>
+      </Button>,
+      { withMemoProvider: false }
     );
 
     const button = screen.getByTestId('button');
@@ -42,10 +43,10 @@ describe('Button Component', () => {
     expect(button).toBeDisabled();
   });
 
-  test('calls onClick handler when clicked', () => {
+  test('calls onClick handler when clicked', async () => {
     const handleClick = jest.fn();
 
-    render(<Button onClick={handleClick}>Click me</Button>);
+    await render(<Button onClick={handleClick}>Click me</Button>, { withMemoProvider: false });
 
     const button = screen.getByTestId('button');
 
@@ -56,13 +57,14 @@ describe('Button Component', () => {
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
 
-  test('does not call onClick when disabled', () => {
+  test('does not call onClick when disabled', async () => {
     const handleClick = jest.fn();
 
-    render(
+    await render(
       <Button onClick={handleClick} disabled>
         Click me
-      </Button>
+      </Button>,
+      { withMemoProvider: false }
     );
 
     const button = screen.getByTestId('button');

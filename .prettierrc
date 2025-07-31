@@ -4,5 +4,24 @@
   "tabWidth": 2,
   "trailingComma": "es5",
   "printWidth": 100,
-  "endOfLine": "auto"
+  "endOfLine": "auto",
+  "plugins": ["@trivago/prettier-plugin-sort-imports"],
+  "importOrder": [
+    ".(?:scss|css)$",
+    "^react(.*)$",
+    "^(?!src|./|../).*$",
+    "^src/constants(.*)$",
+    "^src/utils(.*)$",
+    "^src/hooks(.*)$",
+    "^src/store(.*)$",
+    "^src/pages(.*)$",
+    "^src/containers(.*)$",
+    "^src/components(?!\/Icons).*$",
+    "^src/components/Icons(.*)$",
+    "^src/theme(.*)$",
+    "^src/assets(.*)$",
+    "^src/mockdata(.*)$",
+    "^..\/",
+    "^.\/"
+  ]
 }

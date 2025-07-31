@@ -1,6 +1,6 @@
+import { StorageService } from './index';
 import { Memo } from '@/models';
 import { generateId } from '@/utils';
-import { StorageService } from './index';
 
 /**
  * Implementation of StorageService using IndexedDB
