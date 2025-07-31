@@ -2,3 +2,8 @@ node_modules
 dist
 build
 .eslintrc.js
+
+# Exclude test files
+**/*.test.ts
+**/*.test.tsx
+**/src/__tests__/**

@@ -9,3 +9,6 @@ export * from './hooks';
 
 // Export utils
 export * from './utils';
+
+// Export types
+export * from './types';

@@ -1,5 +1,5 @@
-// Define and export service interfaces here
-import { Memo } from '@/src';
+// Define and export service interfaces and implementations
+import { Memo } from '@/models';
 
 export interface StorageService {
   getAllMemos(): Promise<Memo[]>;
@@ -8,3 +8,6 @@ export interface StorageService {
   updateMemo(id: string, text: string): Promise<Memo | null>;
   deleteMemo(id: string): Promise<boolean>;
 }
+
+// Export the IndexedDB implementation
+export { IndexedDBService } from './IndexedDBService';
