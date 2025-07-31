@@ -6,4 +6,7 @@ module.exports = {
       '@': path.resolve(__dirname, 'src'),
     },
   },
+  jest: {
+    configure: require('./jest.config.js'),
+  },
 };
