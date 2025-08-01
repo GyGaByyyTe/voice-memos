@@ -27,6 +27,32 @@ export class IndexedDBService implements StorageService {
     this.storeName = storeName;
   }
 
+  private onError =
+    (
+      request:
+        | IDBOpenDBRequest
+        | IDBRequest<unknown[]>
+        | IDBRequest<IDBValidKey>
+        | IDBRequest<undefined>,
+      reject: (reason: Error) => void,
+      text: string
+    ) =>
+    (event: Event) => {
+      let message = 'Failed';
+
+      if (request.error) {
+        message = request.error.message;
+      }
+
+      // If the event target has an error, log it
+      const target = event.target as IDBRequest;
+      if (target.error) {
+        message = target.error.message;
+      }
+
+      reject(new Error(`${text}: ${message}`));
+    };
+
   /**
    * Initializes the database connection
    * @returns A promise that resolves when the database is ready
@@ -39,9 +65,7 @@ export class IndexedDBService implements StorageService {
     return new Promise<void>((resolve, reject) => {
       const request = indexedDB.open(this.dbName, this.dbVersion);
 
-      request.onerror = (event) => {
-        reject(new Error(`Failed to open database: ${(event.target as IDBRequest).error}`));
-      };
+      request.onerror = this.onError(request, reject, 'Failed to open IndexedDB');
 
       request.onsuccess = (event) => {
         this.db = (event.target as IDBOpenDBRequest).result;
@@ -51,7 +75,7 @@ export class IndexedDBService implements StorageService {
       request.onupgradeneeded = (event) => {
         const db = (event.target as IDBOpenDBRequest).result;
 
-        // Create object store for memos if it doesn't exist
+        // Create an object store for memos if it doesn't exist
         if (!db.objectStoreNames.contains(this.storeName)) {
           const store = db.createObjectStore(this.storeName, { keyPath: 'id' });
 
@@ -80,9 +104,7 @@ export class IndexedDBService implements StorageService {
       const store = transaction.objectStore(this.storeName);
       const request = store.getAll();
 
-      request.onerror = (event) => {
-        reject(new Error(`Failed to get memos: ${(event.target as IDBRequest).error}`));
-      };
+      request.onerror = this.onError(request, reject, 'Failed to get memos');
 
       request.onsuccess = (event) => {
         const memos = (event.target as IDBRequest).result as Memo[];
@@ -117,9 +139,7 @@ export class IndexedDBService implements StorageService {
       const store = transaction.objectStore(this.storeName);
       const request = store.get(id);
 
-      request.onerror = (event) => {
-        reject(new Error(`Failed to get memo: ${(event.target as IDBRequest).error}`));
-      };
+      request.onerror = this.onError(request, reject, 'Failed to get memo');
 
       request.onsuccess = (event) => {
         const memo = (event.target as IDBRequest).result as Memo | undefined;
@@ -165,9 +185,7 @@ export class IndexedDBService implements StorageService {
       const store = transaction.objectStore(this.storeName);
       const request = store.add(memo);
 
-      request.onerror = (event) => {
-        reject(new Error(`Failed to create memo: ${(event.target as IDBRequest).error}`));
-      };
+      request.onerror = this.onError(request, reject, 'Failed to create memo');
 
       request.onsuccess = () => {
         resolve(memo);
@@ -208,9 +226,7 @@ export class IndexedDBService implements StorageService {
       const store = transaction.objectStore(this.storeName);
       const request = store.put(updatedMemo);
 
-      request.onerror = (event) => {
-        reject(new Error(`Failed to update memo: ${(event.target as IDBRequest).error}`));
-      };
+      request.onerror = this.onError(request, reject, 'Failed to update memo');
 
       request.onsuccess = () => {
         resolve(updatedMemo);
@@ -243,9 +259,7 @@ export class IndexedDBService implements StorageService {
       const store = transaction.objectStore(this.storeName);
       const request = store.delete(id);
 
-      request.onerror = (event) => {
-        reject(new Error(`Failed to delete memo: ${(event.target as IDBRequest).error}`));
-      };
+      request.onerror = this.onError(request, reject, 'Failed to delete memo');
 
       request.onsuccess = () => {
         resolve(true);

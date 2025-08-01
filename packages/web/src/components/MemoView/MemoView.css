@@ -1,0 +1,109 @@
+.memo-view {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.memo-view-card {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+.memo-view-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.memo-view-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.memo-view-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.memo-view-id {
+  font-size: 0.875rem;
+  color: #6c757d;
+  font-family: monospace;
+}
+
+.memo-view-body {
+  padding: 1.5rem;
+}
+
+.memo-view-text {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.memo-view-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.memo-view-dates {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.875rem;
+  color: #6c757d;
+}
+
+.memo-view-created-at,
+.memo-view-updated-at {
+  margin-bottom: 0.25rem;
+}
+
+.memo-view-delete-button {
+  min-width: 100px;
+}
+
+.memo-view-loading {
+  text-align: center;
+  padding: 2rem;
+  color: #6c757d;
+  font-style: italic;
+}
+
+.memo-view-error {
+  text-align: center;
+  padding: 2rem;
+  color: #dc3545;
+  border: 1px solid #dc3545;
+  border-radius: 0.25rem;
+  background-color: rgba(220, 53, 69, 0.1);
+}
+
+.memo-view-not-found {
+  text-align: center;
+  padding: 2rem;
+  color: #6c757d;
+  border: 1px dashed #ced4da;
+  border-radius: 0.25rem;
+  background-color: #f8f9fa;
+}
+
+@media (max-width: 576px) {
+  .memo-view {
+    padding: 0.5rem;
+  }
+
+  .memo-view-footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .memo-view-dates {
+    margin-bottom: 1rem;
+  }
+
+  .memo-view-delete-button {
+    width: 100%;
+  }
+}

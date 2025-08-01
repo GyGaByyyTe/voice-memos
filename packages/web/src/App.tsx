@@ -1,27 +1,82 @@
 import './App.css';
-import React from 'react';
-import { formatDate } from '@voice-memos/common';
+import React, { useCallback, useState } from 'react';
+import { Memo } from '@voice-memos/common';
+import { MemoList, MemoView, MemoForm, Button } from '@/components';
+import MemoProvider from '@/contexts/MemoProvider';
+
+const buttonContainerStyle = { margin: '1rem', textAlign: 'right' } as React.CSSProperties;
 
 function App() {
-  const currentDate = new Date();
-  const formattedDate = formatDate(currentDate);
+  // State to track the currently selected memo and UI mode
+  const [selectedMemo, setSelectedMemo] = useState<Memo | null>(null);
+  const [mode, setMode] = useState<'list' | 'view' | 'create' | 'edit'>('list');
+
+  const handleMemoSelect = useCallback((memo: Memo) => {
+    setSelectedMemo(memo);
+    setMode('view');
+  }, []);
+
+  const handleCreateClick = useCallback(() => {
+    setSelectedMemo(null);
+    setMode('create');
+  }, []);
+
+  const handleEditClick = useCallback((memo: Memo) => {
+    setSelectedMemo(memo);
+    setMode('edit');
+  }, []);
+
+  const handleDeleteComplete = useCallback(() => {
+    setSelectedMemo(null);
+    setMode('list');
+  }, []);
+
+  const handleFormSubmit = useCallback(() => setMode('list'), []);
+
+  const handleFormCancel = useCallback(() => setMode('list'), []);
+
+  const handleBackToList = useCallback(() => {
+    setSelectedMemo(null);
+    setMode('list');
+  }, []);
 
   return (
     <div className="App">
-      <header className="App-header">
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <p>Current date: {formattedDate}</p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <MemoProvider>
+        <header className="App-header">
+          <h1>Voice Memos</h1>
+        </header>
+
+        <main className="App-main">
+          {mode === 'list' && (
+            <div className="list-container">
+              <div style={buttonContainerStyle}>
+                <Button onClick={handleCreateClick} variant="primary" size="medium">
+                  Create New Memo
+                </Button>
+              </div>
+              <MemoList onMemoSelect={handleMemoSelect} />
+            </div>
+          )}
+
+          {mode === 'view' && selectedMemo && (
+            <MemoView
+              memoId={selectedMemo.id}
+              onEdit={handleEditClick}
+              onDelete={handleDeleteComplete}
+              onBack={handleBackToList}
+            />
+          )}
+
+          {mode === 'create' && (
+            <MemoForm onSubmit={handleFormSubmit} onCancel={handleFormCancel} />
+          )}
+
+          {mode === 'edit' && selectedMemo && (
+            <MemoForm memo={selectedMemo} onSubmit={handleFormSubmit} onCancel={handleFormCancel} />
+          )}
+        </main>
+      </MemoProvider>
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import './Button.css';
 import React, { ButtonHTMLAttributes, useMemo } from 'react';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -19,23 +20,21 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
 }
 
-// Base classes
 const baseClasses = 'button';
 
-// Variant classes
 const variantClasses = {
   primary: 'button-primary',
   secondary: 'button-secondary',
   text: 'button-text',
 };
-// Size classes
+
 const sizeClasses = {
   small: 'button-small',
   medium: 'button-medium',
   large: 'button-large',
 };
 /**
- * Primary UI component for user interaction
+ * Button for user interaction
  */
 export const Button: React.FC<ButtonProps> = ({
   variant = 'primary',
@@ -45,7 +44,6 @@ export const Button: React.FC<ButtonProps> = ({
   className = '',
   ...props
 }) => {
-  // Combine classes
   const buttonClasses = useMemo(
     () =>
       [

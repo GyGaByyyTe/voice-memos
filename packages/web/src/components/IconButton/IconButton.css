@@ -1,0 +1,57 @@
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  font-size: 1rem;
+  line-height: 1;
+  border-radius: 50%;
+  border: 1px solid transparent;
+  background-color: transparent;
+  color: #6c757d;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+}
+
+.icon-button:hover {
+  background-color: rgba(108, 117, 125, 0.1);
+  color: #5a6268;
+}
+
+.icon-button-primary {
+  color: #007bff;
+}
+
+.icon-button-primary:hover {
+  background-color: rgba(0, 123, 255, 0.1);
+  color: #0069d9;
+}
+
+.icon-button-secondary {
+  color: #6c757d;
+}
+
+.icon-button-secondary:hover {
+  background-color: rgba(108, 117, 125, 0.1);
+  color: #5a6268;
+}
+
+.icon-button-small {
+  padding: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.icon-button-medium {
+  padding: 0.5rem;
+  font-size: 1rem;
+}
+
+.icon-button-large {
+  padding: 0.75rem;
+  font-size: 1.25rem;
+}
+
+.icon-button-disabled {
+  opacity: 0.65;
+  pointer-events: none;
+}

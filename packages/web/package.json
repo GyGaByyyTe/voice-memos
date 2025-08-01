@@ -30,8 +30,11 @@
   "scripts": {
     "start": "craco start",
     "build": "craco build",
-    "test": "jest",
+    "test": "node --max-old-space-size=4096 node_modules/jest/bin/jest.js",
     "test:craco": "craco test --watchAll=false",
+    "test:app": "node --max-old-space-size=4096 node_modules/jest/bin/jest.js src/App.test.tsx",
+    "test:components": "node --max-old-space-size=4096 node_modules/jest/bin/jest.js src/components",
+    "test:contexts": "node --max-old-space-size=4096 node_modules/jest/bin/jest.js src/contexts",
     "lint": "eslint src --ext .ts,.tsx",
     "eject": "react-scripts eject"
   },

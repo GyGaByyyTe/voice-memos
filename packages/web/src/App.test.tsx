@@ -1,28 +1,69 @@
 import React from 'react';
+import { fireEvent, render as rtlRender, screen } from '@testing-library/react';
 import App from './App';
-import { render, screen, fireEvent } from './test-utils';
+
+// Mock the components to avoid memory issues
+jest.mock('@/components', () => ({
+  MemoList: () => <div data-testid="memo-list">Memo List Component</div>,
+  MemoView: () => <div data-testid="memo-view">Memo View Component</div>,
+  MemoForm: () => <div data-testid="memo-form">Memo Form Component</div>,
+  Button: ({ children, onClick }: { children: React.ReactNode; onClick?: () => void }) => (
+    <button data-testid="button" onClick={onClick}>
+      {children}
+    </button>
+  ),
+}));
+
+// Mock the MemoProvider to avoid memory issues with IndexedDB
+jest.mock('@/contexts/MemoProvider', () => {
+  return {
+    __esModule: true,
+    default: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  };
+});
+
+// Custom render function that doesn't use the test-utils with real IndexedDBService
+const render = (ui: React.ReactElement) => {
+  return rtlRender(ui);
+};
 
 describe('App Component', () => {
-  test('renders learn react link', async () => {
-    await render(<App />, { withMemoProvider: false });
+  test('renders voice memos app with header', async () => {
+    await render(<App />);
 
-    // Check that the link is in the document
-    const linkElement = screen.getByText(/learn react/i);
-    expect(linkElement).toBeInTheDocument();
+    // Check that the header is in the document
+    const headerElement = screen.getByText('Voice Memos');
+    expect(headerElement).toBeInTheDocument();
 
-    // Check that the link has the correct href
-    expect(linkElement).toHaveAttribute('href', 'https://reactjs.org');
+    // Check that the app container has the correct class
+    const appContainer = document.querySelector('.App');
+    expect(appContainer).toBeInTheDocument();
+  });
 
-    // Check that the link opens in a new tab
-    expect(linkElement).toHaveAttribute('target', '_blank');
-    expect(linkElement).toHaveAttribute('rel', 'noopener noreferrer');
+  test('renders memo list by default', async () => {
+    await render(<App />);
 
-    // Test user interaction - click the link
-    // Note: This won't actually navigate in tests, but we can verify the click handler works
-    fireEvent.click(linkElement);
+    // Check that the memo list is rendered by default
+    const memoList = screen.getByTestId('memo-list');
+    expect(memoList).toBeInTheDocument();
 
-    // Check that the app header has the correct class
-    const header = screen.getByRole('banner');
-    expect(header).toHaveClass('App-header');
+    // Check that the created button is rendered
+    const createButton = screen.getByText('Create New Memo');
+    expect(createButton).toBeInTheDocument();
+  });
+
+  test('switches to create mode when create button is clicked', async () => {
+    await render(<App />);
+
+    // Click the create button
+    const createButton = screen.getByText('Create New Memo');
+    fireEvent.click(createButton);
+
+    // Check that the form is rendered
+    const memoForm = screen.getByTestId('memo-form');
+    expect(memoForm).toBeInTheDocument();
+
+    // Check that the list is no longer rendered
+    expect(screen.queryByTestId('memo-list')).not.toBeInTheDocument();
   });
 });

@@ -1,12 +1,66 @@
 import React, { ReactElement } from 'react';
 import { render, RenderOptions, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { IndexedDBService } from '@voice-memos/common';
+import { IndexedDBService, Memo } from '@voice-memos/common';
 import MemoProvider from './contexts/MemoProvider';
 
-// Create a mock storage service for testing
 const createMockStorageService = () => {
-  return new IndexedDBService();
+  const mockService = {
+    initDatabase: jest.fn().mockResolvedValue(undefined),
+    getAllMemos: jest.fn().mockResolvedValue([
+      {
+        id: 'test-id-1',
+        text: 'Test memo 1',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        id: 'test-id-2',
+        text: 'Test memo 2',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ]),
+    getMemoById: jest.fn().mockImplementation((id: string): Promise<Memo | null> => {
+      if (id === 'test-id-1') {
+        return Promise.resolve({
+          id: 'test-id-1',
+          text: 'Test memo 1',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
+      }
+      return Promise.resolve(null);
+    }),
+    createMemo: jest.fn().mockImplementation((text: string): Promise<Memo> => {
+      return Promise.resolve({
+        id: 'new-id',
+        text,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+    }),
+    updateMemo: jest.fn().mockImplementation((id: string, text: string): Promise<Memo | null> => {
+      if (id === 'test-id-1') {
+        return Promise.resolve({
+          id,
+          text,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
+      }
+      return Promise.resolve(null);
+    }),
+    deleteMemo: jest.fn().mockImplementation((id: string): Promise<boolean> => {
+      if (id === 'test-id-1') {
+        return Promise.resolve(true);
+      }
+      return Promise.resolve(false);
+    }),
+    closeDatabase: jest.fn(),
+  };
+
+  return mockService as unknown as IndexedDBService;
 };
 
 interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {

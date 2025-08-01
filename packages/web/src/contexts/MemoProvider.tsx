@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, ReactNode } from 'react';
+import React, { useState, useEffect, useCallback, ReactNode, useMemo } from 'react';
 import { Memo, IndexedDBService } from '@voice-memos/common';
 import { MemoContext, MemoState, initialMemoState } from './MemoContext';
 
@@ -9,9 +9,14 @@ interface MemoProviderProps {
 
 const MemoProvider: React.FC<MemoProviderProps> = ({
   children,
-  storageService = new IndexedDBService(),
+  storageService: externalStorageService,
 }) => {
   const [state, setState] = useState<MemoState>(initialMemoState);
+
+  const storageService = useMemo(
+    () => externalStorageService || new IndexedDBService(),
+    [externalStorageService]
+  );
 
   useEffect(() => {
     const initDb = async () => {
