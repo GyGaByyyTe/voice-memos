@@ -4,7 +4,12 @@ import { Memo } from '@voice-memos/common';
 import { MemoList, MemoView, MemoForm, Button } from '@/components';
 import MemoProvider from '@/contexts/MemoProvider';
 
-const buttonContainerStyle = { margin: '1rem', textAlign: 'right' } as React.CSSProperties;
+const buttonContainerStyle = {
+  padding: '1rem',
+  maxWidth: '800px',
+  margin: '1rem auto',
+  textAlign: 'right',
+} as React.CSSProperties;
 
 function App() {
   // State to track the currently selected memo and UI mode

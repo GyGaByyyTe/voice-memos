@@ -4,6 +4,7 @@ import { Memo } from '@voice-memos/common';
 import { Button, IconButton, TextArea } from '@/components';
 import { Card, CardHeader, CardBody, CardFooter } from '@/components/Card';
 import { useMemoContext } from '@/contexts/MemoContext';
+import { useSpeechRecognition } from '@/hooks';
 
 export interface MemoFormProps {
   /**
@@ -32,7 +33,11 @@ const validate = (text: string): string | null => {
 
   return null;
 };
-
+const options = {
+  language: 'en-US',
+  continuous: true,
+  interimResults: false,
+};
 /**
  * Component for creating or editing memos
  */
@@ -41,10 +46,20 @@ export const MemoForm: React.FC<MemoFormProps> = ({ memo, onSubmit, onCancel, cl
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [touched, setTouched] = useState<boolean>(false);
+  const [appendMode, setAppendMode] = useState<boolean>(true);
 
   const { createMemo, updateMemo } = useMemoContext();
 
-  // Determine if there's a validation error to show
+  const {
+    transcript,
+    isListening,
+    error: speechError,
+    supported: speechSupported,
+    startListening,
+    stopListening,
+    resetTranscript,
+  } = useSpeechRecognition(options);
+
   const showError = useMemo(() => touched && !text.trim(), [touched, text]);
 
   useEffect(() => {
@@ -53,16 +68,68 @@ export const MemoForm: React.FC<MemoFormProps> = ({ memo, onSubmit, onCancel, cl
     }
   }, [memo]);
 
+  useEffect(() => {
+    return () => {
+      if (isListening) {
+        stopListening();
+      }
+    };
+  }, [isListening, stopListening]);
+
+  // Update text when transcript changes
+  useEffect(() => {
+    if (transcript && isListening) {
+      if (appendMode) {
+        // Append a transcript to an existing text
+        setText((prevText) => {
+          // Add a space if the previous text doesn't end with one
+          const separator = prevText && !prevText.endsWith(' ') ? ' ' : '';
+          return prevText + separator + transcript;
+        });
+      } else {
+        // Replace text with transcript
+        setText(transcript);
+      }
+      setTouched(true);
+      resetTranscript();
+    }
+  }, [transcript, isListening, appendMode, resetTranscript]);
+
+  useEffect(() => {
+    if (speechError) {
+      setError(speechError);
+    }
+  }, [speechError]);
+
+  const toggleSpeechRecognition = useCallback(
+    (e?: React.MouseEvent<HTMLButtonElement>) => {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+
+      if (isListening) {
+        stopListening();
+      } else {
+        startListening();
+      }
+    },
+    [isListening, startListening, stopListening]
+  );
+
   const handleTextChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setText(e.target.value);
     setTouched(true);
   }, []);
 
-  // Handle form submission
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
       setTouched(true);
+
+      if (isListening) {
+        stopListening();
+      }
 
       const formError = validate(text);
       if (formError) {
@@ -99,7 +166,7 @@ export const MemoForm: React.FC<MemoFormProps> = ({ memo, onSubmit, onCancel, cl
         setIsSubmitting(false);
       }
     },
-    [memo, text, onSubmit, updateMemo, createMemo]
+    [memo, text, onSubmit, updateMemo, createMemo, isListening, stopListening]
   );
 
   const handleCancel = useCallback(() => onCancel?.(), [onCancel]);
@@ -121,22 +188,74 @@ export const MemoForm: React.FC<MemoFormProps> = ({ memo, onSubmit, onCancel, cl
           )}
         </CardHeader>
 
+        {speechSupported && (
+          <div
+            className="memo-form-voice-controls"
+            style={{ padding: '0 1.5rem', marginBottom: '1rem' }}
+          >
+            <IconButton
+              type="button"
+              onClick={toggleSpeechRecognition}
+              className={`memo-form-mic-button ${isListening ? 'active' : ''}`}
+              aria-label={isListening ? 'Stop voice input' : 'Start voice input'}
+              data-testid="voice-input-button"
+              title={isListening ? 'Stop voice input' : 'Start voice input'}
+            >
+              🎤
+            </IconButton>
+
+            {isListening && (
+              <div className="memo-form-recording-indicator" data-testid="recording-indicator">
+                Recording...
+              </div>
+            )}
+
+            <div className="memo-form-append-mode">
+              <label className="memo-form-append-label">
+                <input
+                  type="checkbox"
+                  checked={appendMode}
+                  onChange={() => setAppendMode(!appendMode)}
+                  data-testid="append-mode-toggle"
+                />
+                Append text
+              </label>
+            </div>
+          </div>
+        )}
+
+        {!speechSupported && (
+          <div
+            className="memo-form-speech-not-supported"
+            style={{ padding: '0 1.5rem', marginBottom: '1rem' }}
+            data-testid="speech-not-supported"
+          >
+            Voice input is not supported in your browser.
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} data-testid="memo-form-element">
           <CardBody className="memo-form-body">
-            <TextArea
-              label="Memo Text"
-              id="memo-text"
-              value={text}
-              onChange={handleTextChange}
-              placeholder="Enter your memo text here..."
-              error={showError}
-              helperText={showError ? 'Memo text is required' : ''}
-              disabled={isSubmitting}
-              required
-              data-testid="memo-text-input"
-            />
+            <div className="memo-form-textarea-container">
+              <TextArea
+                label="Memo Text"
+                id="memo-text"
+                value={text}
+                onChange={handleTextChange}
+                placeholder="Enter your memo text here..."
+                error={showError}
+                helperText={showError ? 'Memo text is required' : ''}
+                disabled={isSubmitting}
+                required
+                data-testid="memo-text-input"
+              />
+            </div>
 
-            {error && !showError && <div className="memo-form-error">{error}</div>}
+            {error && !showError && (
+              <div className="memo-form-error" role="alert">
+                {error}
+              </div>
+            )}
           </CardBody>
 
           <CardFooter className="memo-form-footer">

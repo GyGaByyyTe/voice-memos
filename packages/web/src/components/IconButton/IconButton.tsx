@@ -29,6 +29,7 @@ export const IconButton: React.FC<IconButtonProps> = ({
   disabled = false,
   children,
   className = '',
+  type = 'button',
   ...props
 }) => {
   const buttonClasses = useMemo(
@@ -44,7 +45,13 @@ export const IconButton: React.FC<IconButtonProps> = ({
   );
 
   return (
-    <button className={buttonClasses} disabled={disabled} data-testid="icon-button" {...props}>
+    <button
+      className={buttonClasses}
+      disabled={disabled}
+      type={type}
+      data-testid="icon-button"
+      {...props}
+    >
       {children}
     </button>
   );

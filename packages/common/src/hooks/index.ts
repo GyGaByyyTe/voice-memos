@@ -9,6 +9,7 @@ export interface SpeechRecognitionOptions {
   continuous?: boolean;
   interimResults?: boolean;
   maxAlternatives?: number;
+  includeInterimResults?: boolean;
 }
 
 /**
@@ -55,7 +56,7 @@ export class SpeechRecognitionManager {
     if (!this.recognition) return;
 
     // Настройка параметров распознавания
-    this.recognition.lang = this.options.language || 'ru-RU';
+    this.recognition.lang = this.options.language || 'en-US';
     this.recognition.continuous = this.options.continuous ?? true;
     this.recognition.interimResults = this.options.interimResults ?? true;
     this.recognition.maxAlternatives = this.options.maxAlternatives ?? 1;
@@ -75,7 +76,14 @@ export class SpeechRecognitionManager {
       }
 
       this.transcript = finalTranscript;
-      this.notifyTranscriptChange(finalTranscript + interimTranscript);
+
+      const notificationTranscript = this.options.includeInterimResults
+        ? finalTranscript + interimTranscript
+        : finalTranscript;
+
+      if (notificationTranscript) {
+        this.notifyTranscriptChange(notificationTranscript);
+      }
     };
 
     this.recognition.onerror = (event) => {
@@ -130,6 +138,7 @@ export class SpeechRecognitionManager {
 
     try {
       this.isListening = false;
+      this.notifyListeningChange();
       this.recognition.stop();
     } catch (err) {
       this.error = `Ошибка остановки распознавания: ${err}`;

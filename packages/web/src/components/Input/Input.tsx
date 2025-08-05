@@ -28,6 +28,10 @@ export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
   'data-testid'?: string;
 }
 
+const wrapperStyle: React.CSSProperties = {
+  display: 'flex',
+};
+
 /**
  * Input component for text entry
  */
@@ -57,7 +61,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     );
 
     return (
-      <div>
+      <div style={wrapperStyle}>
         {label && (
           <label className="input-label" htmlFor={props.id}>
             {label}

@@ -1,5 +1,4 @@
 .memo-list-container {
-  width: 100%;
   max-width: 800px;
   margin: 0 auto;
   padding: 1rem;
@@ -18,16 +17,12 @@
 
 .memo-list-filter {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   gap: 0.5rem;
 }
 
 .memo-list-search {
   flex: 1;
-}
-
-.memo-list-clear-search {
-  margin-bottom: 0.25rem;
 }
 
 .memo-list-sort {
@@ -53,14 +48,14 @@
 
 .memo-list-loading {
   text-align: center;
-  padding: 2rem;
+  padding: 2rem 0;
   color: #6c757d;
   font-style: italic;
 }
 
 .memo-list-error {
   text-align: center;
-  padding: 2rem;
+  padding: 2rem 0;
   color: #dc3545;
   border: 1px solid #dc3545;
   border-radius: 0.25rem;
@@ -69,7 +64,7 @@
 
 .memo-list-empty {
   text-align: center;
-  padding: 2rem;
+  padding: 2rem 0;
   color: #6c757d;
   border: 1px dashed #ced4da;
   border-radius: 0.25rem;
@@ -128,10 +123,6 @@
 }
 
 @media (max-width: 576px) {
-  .memo-list {
-    padding: 0.5rem;
-  }
-
   .memo-card-footer {
     flex-direction: column;
     align-items: flex-start;

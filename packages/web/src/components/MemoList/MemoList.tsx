@@ -81,15 +81,19 @@ export const MemoList: React.FC<MemoListProps> = ({ onMemoSelect, className = ''
   const handleSearchClear = useCallback(() => setSearchText(''), []);
 
   if (loading) {
-    return <div className="memo-list-loading">Loading memos...</div>;
+    return <div className="memo-list-container memo-list-loading">Loading memos...</div>;
   }
 
   if (error) {
-    return <div className="memo-list-error">Error: {error}</div>;
+    return <div className="memo-list-container memo-list-error">Error: {error}</div>;
   }
 
   if (memos.length === 0) {
-    return <div className="memo-list-empty">No memos found. Create your first memo!</div>;
+    return (
+      <div className="memo-list-container memo-list-empty">
+        No memos found. Create your first memo!
+      </div>
+    );
   }
 
   return (

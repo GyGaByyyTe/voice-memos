@@ -2,6 +2,24 @@ import React from 'react';
 import { Memo, IndexedDBService } from '@voice-memos/common';
 import { render, screen, fireEvent, waitFor } from '../../test-utils';
 import { MemoForm } from './MemoForm';
+import { useSpeechRecognition } from '@/hooks';
+
+// Mock the useSpeechRecognition hook
+const mockStartListening = jest.fn();
+const mockStopListening = jest.fn();
+const mockResetTranscript = jest.fn();
+
+jest.mock('@/hooks', () => ({
+  useSpeechRecognition: jest.fn(() => ({
+    transcript: '',
+    isListening: false,
+    error: null,
+    supported: true,
+    startListening: mockStartListening,
+    stopListening: mockStopListening,
+    resetTranscript: mockResetTranscript,
+  })),
+}));
 
 // Mock memo for testing
 const mockMemo: Memo = {
@@ -251,5 +269,249 @@ describe('MemoForm Component', () => {
     const memoForm = screen.getByTestId('memo-form');
     expect(memoForm).toHaveClass('memo-form');
     expect(memoForm).toHaveClass('custom-class');
+  });
+
+  // Voice input tests
+  describe('Voice Input Functionality', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+      // Reset the mock implementation for each test
+      (useSpeechRecognition as jest.Mock).mockImplementation(() => ({
+        transcript: '',
+        isListening: false,
+        error: null,
+        supported: true,
+        startListening: mockStartListening,
+        stopListening: mockStopListening,
+        resetTranscript: mockResetTranscript,
+      }));
+    });
+
+    test('renders microphone button when speech recognition is supported', async () => {
+      await render(<MemoForm />, { storageService: mockStorageService });
+
+      // Check that the microphone button is rendered
+      const micButton = screen.getByTestId('voice-input-button');
+      expect(micButton).toBeInTheDocument();
+      expect(micButton).toHaveTextContent('🎤');
+    });
+
+    test('does not render microphone button when speech recognition is not supported', async () => {
+      // Mock speech recognition as not supported
+      (useSpeechRecognition as jest.Mock).mockImplementation(() => ({
+        transcript: '',
+        isListening: false,
+        error: null,
+        supported: false,
+        startListening: mockStartListening,
+        stopListening: mockStopListening,
+        resetTranscript: mockResetTranscript,
+      }));
+
+      await render(<MemoForm />, { storageService: mockStorageService });
+
+      // Check that the microphone button is not rendered
+      expect(screen.queryByTestId('voice-input-button')).not.toBeInTheDocument();
+
+      // Check that the not supported message is rendered
+      const notSupportedMessage = screen.getByTestId('speech-not-supported');
+      expect(notSupportedMessage).toBeInTheDocument();
+      expect(notSupportedMessage).toHaveTextContent(
+        'Voice input is not supported in your browser.'
+      );
+    });
+
+    test('calls startListening when microphone button is clicked', async () => {
+      await render(<MemoForm />, { storageService: mockStorageService });
+
+      // Click the microphone button
+      const micButton = screen.getByTestId('voice-input-button');
+      fireEvent.click(micButton);
+
+      // Check that startListening was called
+      expect(mockStartListening).toHaveBeenCalledTimes(1);
+    });
+
+    test('calls stopListening when microphone button is clicked while listening', async () => {
+      // Mock speech recognition as listening
+      (useSpeechRecognition as jest.Mock).mockImplementation(() => ({
+        transcript: '',
+        isListening: true,
+        error: null,
+        supported: true,
+        startListening: mockStartListening,
+        stopListening: mockStopListening,
+        resetTranscript: mockResetTranscript,
+      }));
+
+      await render(<MemoForm />, { storageService: mockStorageService });
+
+      // Click the microphone button
+      const micButton = screen.getByTestId('voice-input-button');
+      fireEvent.click(micButton);
+
+      // Check that stopListening was called
+      expect(mockStopListening).toHaveBeenCalledTimes(1);
+    });
+
+    test('shows recording indicator when listening', async () => {
+      // Mock speech recognition as listening
+      (useSpeechRecognition as jest.Mock).mockImplementation(() => ({
+        transcript: '',
+        isListening: true,
+        error: null,
+        supported: true,
+        startListening: mockStartListening,
+        stopListening: mockStopListening,
+        resetTranscript: mockResetTranscript,
+      }));
+
+      await render(<MemoForm />, { storageService: mockStorageService });
+
+      // Check that the recording indicator is rendered
+      const recordingIndicator = screen.getByTestId('recording-indicator');
+      expect(recordingIndicator).toBeInTheDocument();
+      expect(recordingIndicator).toHaveTextContent('Recording...');
+    });
+
+    test('updates text with transcript in append mode', async () => {
+      // Set up initial component with some text
+      const { rerender } = await render(<MemoForm />, { storageService: mockStorageService });
+
+      // Enter some initial text
+      const textarea = screen.getByTestId('memo-text-input');
+      fireEvent.change(textarea, { target: { value: 'Initial text' } });
+
+      // Now mock speech recognition with a transcript
+      (useSpeechRecognition as jest.Mock).mockImplementation(() => ({
+        transcript: 'Speech text',
+        isListening: true,
+        error: null,
+        supported: true,
+        startListening: mockStartListening,
+        stopListening: mockStopListening,
+        resetTranscript: mockResetTranscript,
+      }));
+
+      // Re-render to trigger the effect with the new transcript
+      rerender(<MemoForm />);
+
+      // Check that the text was updated with the transcript appended
+      expect(textarea).toHaveValue('Initial text Speech text');
+
+      // Check that resetTranscript was called
+      expect(mockResetTranscript).toHaveBeenCalled();
+    });
+
+    test('updates text with transcript in replace mode', async () => {
+      // Set up initial component with some text and append mode off
+      const { rerender } = await render(<MemoForm />, { storageService: mockStorageService });
+
+      // Enter some initial text
+      const textarea = screen.getByTestId('memo-text-input');
+      fireEvent.change(textarea, { target: { value: 'Initial text' } });
+
+      // Toggle append mode off
+      const appendToggle = screen.getByTestId('append-mode-toggle');
+      fireEvent.click(appendToggle);
+
+      // Now mock speech recognition with a transcript
+      (useSpeechRecognition as jest.Mock).mockImplementation(() => ({
+        transcript: 'Speech text',
+        isListening: true,
+        error: null,
+        supported: true,
+        startListening: mockStartListening,
+        stopListening: mockStopListening,
+        resetTranscript: mockResetTranscript,
+      }));
+
+      // Re-render to trigger the effect with the new transcript
+      rerender(<MemoForm />);
+
+      // Check that the text was replaced with the transcript
+      expect(textarea).toHaveValue('Speech text');
+
+      // Check that resetTranscript was called
+      expect(mockResetTranscript).toHaveBeenCalled();
+    });
+
+    test('displays speech recognition error', async () => {
+      // Mock speech recognition with an error
+      (useSpeechRecognition as jest.Mock).mockImplementation(() => ({
+        transcript: '',
+        isListening: false,
+        error: 'Speech recognition error',
+        supported: true,
+        startListening: mockStartListening,
+        stopListening: mockStopListening,
+        resetTranscript: mockResetTranscript,
+      }));
+
+      await render(<MemoForm />, { storageService: mockStorageService });
+
+      // Check that the error is displayed
+      const errorElement = screen.getByRole('alert');
+      expect(errorElement).toBeInTheDocument();
+      expect(errorElement).toHaveTextContent('Speech recognition error');
+    });
+
+    test('does not process duplicate transcripts', async () => {
+      // Set up initial component
+      const { rerender } = await render(<MemoForm />, { storageService: mockStorageService });
+
+      // Mock speech recognition with a transcript
+      (useSpeechRecognition as jest.Mock).mockImplementation(() => ({
+        transcript: 'First transcript',
+        isListening: true,
+        error: null,
+        supported: true,
+        startListening: mockStartListening,
+        stopListening: mockStopListening,
+        resetTranscript: mockResetTranscript,
+      }));
+
+      // Re-render to trigger the effect with the transcript
+      rerender(<MemoForm />);
+
+      // Check that the text was updated with the transcript
+      const textarea = screen.getByTestId('memo-text-input');
+      expect(textarea).toHaveValue('First transcript');
+
+      // Check that resetTranscript was called
+      expect(mockResetTranscript).toHaveBeenCalledTimes(1);
+
+      // Reset the mock to check the next call
+      mockResetTranscript.mockClear();
+
+      // Re-render with the same transcript
+      rerender(<MemoForm />);
+
+      // Check that the text was not updated again (still has the same value)
+      expect(textarea).toHaveValue('First transcript');
+
+      // Check that resetTranscript was not called again (since the transcript was the same)
+      expect(mockResetTranscript).not.toHaveBeenCalled();
+
+      // Now update with a new transcript
+      (useSpeechRecognition as jest.Mock).mockImplementation(() => ({
+        transcript: 'Second transcript',
+        isListening: true,
+        error: null,
+        supported: true,
+        startListening: mockStartListening,
+        stopListening: mockStopListening,
+        resetTranscript: mockResetTranscript,
+      }));
+
+      // Re-render with the new transcript
+      rerender(<MemoForm />);
+
+      // Check that the text was updated with the new transcript
+      expect(textarea).toHaveValue('First transcript Second transcript');
+
+      // Check that resetTranscript was called for the new transcript
+      expect(mockResetTranscript).toHaveBeenCalledTimes(1);
+    });
   });
 });

@@ -12,7 +12,7 @@ export const generateId = (): string => {
  * @returns A formatted date string
  */
 export const formatDate = (date: Date): string => {
-  return new Intl.DateTimeFormat('ru-RU', {
+  return new Intl.DateTimeFormat('en-US', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
