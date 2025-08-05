@@ -290,4 +290,4 @@ export const MemoForm: React.FC<MemoFormProps> = ({ memo, onSubmit, onCancel, cl
   );
 };
 
-export default MemoForm;
+export default React.memo(MemoForm);

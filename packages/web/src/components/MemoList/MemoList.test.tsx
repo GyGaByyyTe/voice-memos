@@ -55,6 +55,37 @@ describe('MemoList Component', () => {
     jest.clearAllMocks();
   });
 
+  // Test for memoization effectiveness
+  describe('Memoization', () => {
+    test('MemoList is memoized with React.memo', () => {
+      // Import the default export (memoized component)
+      const MemoListDefault = require('./MemoList').default;
+
+      // Check if it's a memoized component
+      expect(MemoListDefault).toBeDefined();
+
+      // Check if the source code contains React.memo
+      const memoListSource = require('fs').readFileSync(require.resolve('./MemoList'), 'utf8');
+      expect(memoListSource).toContain('React.memo');
+
+      // Verify that the exported component is the result of React.memo
+      // by checking if the source code contains 'export default React.memo'
+      expect(memoListSource).toContain('export default React.memo');
+    });
+
+    test('MemoList contains memoized child components', () => {
+      // Check if the source code contains multiple instances of React.memo
+      // This verifies that child components (like MemoCard) are also memoized
+      const memoListSource = require('fs').readFileSync(require.resolve('./MemoList'), 'utf8');
+
+      // Count occurrences of React.memo
+      const memoCount = (memoListSource.match(/React\.memo/g) || []).length;
+
+      // There should be at least 2 instances (MemoList and at least one child component)
+      expect(memoCount).toBeGreaterThanOrEqual(2);
+    });
+  });
+
   test('renders loading state', async () => {
     await renderWithMockContext(<MemoList />, {
       state: { memos: [], loading: true, error: null },

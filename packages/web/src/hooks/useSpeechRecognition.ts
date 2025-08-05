@@ -108,15 +108,18 @@ export const useSpeechRecognition = (
     }
   }, []);
 
-  return {
-    transcript,
-    isListening,
-    error,
-    supported,
-    startListening,
-    stopListening,
-    resetTranscript,
-  };
+  return useMemo(
+    () => ({
+      transcript,
+      isListening,
+      error,
+      supported,
+      startListening,
+      stopListening,
+      resetTranscript,
+    }),
+    [transcript, isListening, error, supported, startListening, stopListening, resetTranscript]
+  );
 };
 
 export default useSpeechRecognition;

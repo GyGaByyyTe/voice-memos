@@ -154,7 +154,7 @@ interface MemoCardProps {
 /**
  * MemoCard component displays a single memo in a card
  */
-const MemoCard: React.FC<MemoCardProps> = ({ memo, onSelect }) => {
+const MemoCard: React.FC<MemoCardProps> = React.memo(({ memo, onSelect }) => {
   const cardStyle = useMemo(() => ({ cursor: onSelect ? 'pointer' : 'default' }), [onSelect]);
 
   const cardText = useMemo(() => truncateText(memo.text, 150), [memo.text]);
@@ -183,6 +183,6 @@ const MemoCard: React.FC<MemoCardProps> = ({ memo, onSelect }) => {
       </CardFooter>
     </Card>
   );
-};
+});
 
-export default MemoList;
+export default React.memo(MemoList);

@@ -1,8 +1,12 @@
 import './App.css';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, lazy, Suspense } from 'react';
 import { Memo } from '@voice-memos/common';
-import { MemoList, MemoView, MemoForm, Button } from '@/components';
+import { Button } from '@/components';
 import MemoProvider from '@/contexts/MemoProvider';
+
+const MemoList = lazy(() => import('@/components/MemoList/MemoList'));
+const MemoView = lazy(() => import('@/components/MemoView/MemoView'));
+const MemoForm = lazy(() => import('@/components/MemoForm/MemoForm'));
 
 const buttonContainerStyle = {
   padding: '1rem',
@@ -53,33 +57,39 @@ function App() {
         </header>
 
         <main className="App-main">
-          {mode === 'list' && (
-            <div className="list-container">
-              <div style={buttonContainerStyle}>
-                <Button onClick={handleCreateClick} variant="primary" size="medium">
-                  Create New Memo
-                </Button>
+          <Suspense fallback={<LoadingFallback />}>
+            {mode === 'list' && (
+              <div className="list-container">
+                <div style={buttonContainerStyle}>
+                  <Button onClick={handleCreateClick} variant="primary" size="medium">
+                    Create New Memo
+                  </Button>
+                </div>
+                <MemoList onMemoSelect={handleMemoSelect} />
               </div>
-              <MemoList onMemoSelect={handleMemoSelect} />
-            </div>
-          )}
+            )}
 
-          {mode === 'view' && selectedMemo && (
-            <MemoView
-              memoId={selectedMemo.id}
-              onEdit={handleEditClick}
-              onDelete={handleDeleteComplete}
-              onBack={handleBackToList}
-            />
-          )}
+            {mode === 'view' && selectedMemo && (
+              <MemoView
+                memoId={selectedMemo.id}
+                onEdit={handleEditClick}
+                onDelete={handleDeleteComplete}
+                onBack={handleBackToList}
+              />
+            )}
 
-          {mode === 'create' && (
-            <MemoForm onSubmit={handleFormSubmit} onCancel={handleFormCancel} />
-          )}
+            {mode === 'create' && (
+              <MemoForm onSubmit={handleFormSubmit} onCancel={handleFormCancel} />
+            )}
 
-          {mode === 'edit' && selectedMemo && (
-            <MemoForm memo={selectedMemo} onSubmit={handleFormSubmit} onCancel={handleFormCancel} />
-          )}
+            {mode === 'edit' && selectedMemo && (
+              <MemoForm
+                memo={selectedMemo}
+                onSubmit={handleFormSubmit}
+                onCancel={handleFormCancel}
+              />
+            )}
+          </Suspense>
         </main>
       </MemoProvider>
     </div>
@@ -87,3 +97,10 @@ function App() {
 }
 
 export default App;
+
+// Loading fallback component
+const LoadingFallback = () => (
+  <div className="loading-fallback">
+    <p>Loading...</p>
+  </div>
+);

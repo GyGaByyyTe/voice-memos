@@ -187,4 +187,4 @@ export const MemoView: React.FC<MemoViewProps> = ({
   );
 };
 
-export default MemoView;
+export default React.memo(MemoView);

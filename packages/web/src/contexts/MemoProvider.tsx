@@ -155,14 +155,17 @@ const MemoProvider: React.FC<MemoProviderProps> = ({
     [storageService]
   );
 
-  const contextValue = {
-    state,
-    getAllMemos,
-    getMemoById,
-    createMemo,
-    updateMemo,
-    deleteMemo,
-  };
+  const contextValue = useMemo(
+    () => ({
+      state,
+      getAllMemos,
+      getMemoById,
+      createMemo,
+      updateMemo,
+      deleteMemo,
+    }),
+    [state, getAllMemos, getMemoById, createMemo, updateMemo, deleteMemo]
+  );
 
   return <MemoContext.Provider value={contextValue}>{children}</MemoContext.Provider>;
 };
