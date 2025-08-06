@@ -201,8 +201,14 @@ export const MemoForm: React.FC<MemoFormProps> = ({ memo, onSubmit, onCancel, cl
               data-testid="voice-input-button"
               title={isListening ? 'Stop voice input' : 'Start voice input'}
             >
-              🎤
+              {isListening ? '⏹️' : '🎤'}
             </IconButton>
+
+            {!isListening && (
+              <div className="memo-form-start-recording" data-testid="start-recording-label">
+                Start Voice Input
+              </div>
+            )}
 
             {isListening && (
               <div className="memo-form-recording-indicator" data-testid="recording-indicator">

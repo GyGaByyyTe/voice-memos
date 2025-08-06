@@ -287,13 +287,18 @@ describe('MemoForm Component', () => {
       }));
     });
 
-    test('renders microphone button when speech recognition is supported', async () => {
+    test('renders microphone button and "Start Voice Input" text when speech recognition is supported', async () => {
       await render(<MemoForm />, { storageService: mockStorageService });
 
       // Check that the microphone button is rendered
       const micButton = screen.getByTestId('voice-input-button');
       expect(micButton).toBeInTheDocument();
       expect(micButton).toHaveTextContent('🎤');
+
+      // Check that the "Start Voice Input" text is rendered
+      const startRecordingText = screen.getByTestId('start-recording-label');
+      expect(startRecordingText).toBeInTheDocument();
+      expect(startRecordingText).toHaveTextContent('Start Voice Input');
     });
 
     test('does not render microphone button when speech recognition is not supported', async () => {
@@ -354,7 +359,7 @@ describe('MemoForm Component', () => {
       expect(mockStopListening).toHaveBeenCalledTimes(1);
     });
 
-    test('shows recording indicator when listening', async () => {
+    test('shows recording indicator and stop icon when listening', async () => {
       // Mock speech recognition as listening
       (useSpeechRecognition as jest.Mock).mockImplementation(() => ({
         transcript: '',
@@ -372,6 +377,14 @@ describe('MemoForm Component', () => {
       const recordingIndicator = screen.getByTestId('recording-indicator');
       expect(recordingIndicator).toBeInTheDocument();
       expect(recordingIndicator).toHaveTextContent('Recording...');
+
+      // Check that the microphone button shows a stop icon
+      const micButton = screen.getByTestId('voice-input-button');
+      expect(micButton).toBeInTheDocument();
+      expect(micButton).toHaveTextContent('⏹️');
+
+      // Check that the "Start Recording" text is not shown when recording
+      expect(screen.queryByTestId('start-recording-label')).not.toBeInTheDocument();
     });
 
     test('updates text with transcript in append mode', async () => {
