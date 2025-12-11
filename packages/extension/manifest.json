@@ -1,0 +1,11 @@
+{
+  "manifest_version": 3,
+  "name": "My Voice Memos (Extension)",
+  "version": "0.1.0",
+  "description": "Create a memo and view all memos using IndexedDB inside the extension.",
+  "action": {
+    "default_title": "Voice Memos",
+    "default_popup": "src/popup.html"
+  },
+  "permissions": ["tabs"]
+}

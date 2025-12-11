@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Voice Memos</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="popup.js" defer></script>
+</head>
+<body>
+  <div class="container">
+    <h1 class="title">Voice Memos</h1>
+
+    <label for="memoText" class="label">New memo</label>
+    <textarea id="memoText" class="textarea" rows="4" placeholder="Type your memo text here..."></textarea>
+
+    <div class="actions">
+      <button id="saveBtn" class="btn btn-primary">Save memo</button>
+      <button id="viewAllBtn" class="btn">View all</button>
+    </div>
+
+    <div id="status" class="status" aria-live="polite"></div>
+  </div>
+</body>
+</html>

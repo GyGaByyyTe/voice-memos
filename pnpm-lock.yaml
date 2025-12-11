@@ -67,6 +67,8 @@ importers:
         specifier: ^1.8.16
         version: 1.8.16
 
+  packages/extension: {}
+
   packages/web:
     dependencies:
       '@testing-library/dom':
